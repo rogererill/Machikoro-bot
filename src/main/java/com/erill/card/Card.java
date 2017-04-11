@@ -1,6 +1,6 @@
 package com.erill.card;
 
-import com.erill.PrintColorWriter;
+import com.erill.printer.PrintColorWriter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
