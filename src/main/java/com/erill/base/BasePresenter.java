@@ -1,4 +1,4 @@
-package com.erill;
+package com.erill.base;
 
 /**
  * Created by Roger Erill on 11/4/17.
@@ -22,10 +22,6 @@ public class BasePresenter<V> {
     public V getView() {
         checkViewAttached();
         return view;
-    }
-
-    public void print(String message) {
-        System.out.println(message);
     }
 
     public void checkViewAttached() {
