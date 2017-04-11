@@ -12,7 +12,7 @@ public class MainScreen implements MainView {
         presenter = new MainPresenter(new Board());
         presenter.bindView(this);
 
-        presenter.printDeck();
+        presenter.printBoard();
     }
 
     @Override

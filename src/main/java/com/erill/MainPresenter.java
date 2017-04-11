@@ -17,9 +17,9 @@ public class MainPresenter extends BasePresenter<MainView> {
         this.board = board;
     }
 
-    public void printDeck() {
-        List<Card> deck = board.getDeck();
-        for (Card card : deck) {
+    public void printBoard() {
+        List<Card> boardCards = board.getBoardCards();
+        for (Card card : boardCards) {
             print(card.getDetailedCardDescription());
         }
     }

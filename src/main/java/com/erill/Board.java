@@ -12,11 +12,11 @@ public class Board {
 
     private static final int MAX_DIFFERENT_CARDS = 10;
     private final Stack<Card> deck;
-    private List<Card> board;
+    private List<Card> boardCards;
 
     public Board() {
         this.deck = createDefaultDeck();
-        this.board = getInitialBoard();
+        this.boardCards = getInitialBoard();
     }
 
     private Stack<Card> createDefaultDeck() {
@@ -88,8 +88,8 @@ public class Board {
         return deck;
     }
 
-    public List<Card> getBoard() {
-        return board;
+    public List<Card> getBoardCards() {
+        return boardCards;
     }
 
     public Card createCardByName(CardName cardName) {

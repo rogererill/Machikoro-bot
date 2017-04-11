@@ -5,19 +5,19 @@ package com.erill.card;
  */
 public enum CardType {
 
-    PRIMARY_INDUSTRY("Primary Industry"),
-    SECONDARY_INDUSTRY("Secondary Industry"),
-    RESTAURANT("Restaurant"),
-    MAJOR_ESTABLISHMENT("Major establishment"),
-    LANDMARK("Landmark");
+    PRIMARY_INDUSTRY("[BLUE]"),
+    SECONDARY_INDUSTRY("[GREEN]"),
+    RESTAURANT("[RED]"),
+    MAJOR_ESTABLISHMENT("[PURPLE]"),
+    LANDMARK("[YELLOW]");
 
-    private String name;
+    private String color;
 
-    CardType(String name) {
-        this.name = name;
+    CardType(String color) {
+        this.color = color;
     }
 
-    public String getName() {
-        return name;
+    public String getColor() {
+        return color;
     }
 }

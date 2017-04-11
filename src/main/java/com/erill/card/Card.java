@@ -62,20 +62,19 @@ public class Card {
 
     public String getDetailedCardDescription() {
         StringBuilder sb = new StringBuilder();
-        sb.append("CARD").append("\n");
         sb.append(activations.get(0));
         for (int i = 1; i < activations.size(); i++) {
             sb.append("-").append(activations.get(i));
         }
+        sb.append("  ");
+        sb.append(name.getName()).append(" ").append(type.getColor());
+        if (type != CardType.MAJOR_ESTABLISHMENT) sb.append("  ").append(cardClass.getName());
         sb.append("\n");
-        sb.append(name.getName()).append("\n");
-        sb.append(type.getName()).append("\n");
-        if (type != CardType.MAJOR_ESTABLISHMENT) sb.append(cardClass.getName()).append("\n");
-        sb.append("\n");
+        sb.append("Cost: ").append(cost);
         if (reward != -1) {
-            sb.append("Reward: ").append(reward).append("\n");
+            sb.append("   ").append("Reward: ").append(reward);
         }
-        sb.append("Cost: ").append(cost).append("\n").append("\n");
+        sb.append("\n");
         return sb.toString();
     }
 
