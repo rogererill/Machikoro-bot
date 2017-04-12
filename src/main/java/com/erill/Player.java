@@ -17,12 +17,14 @@ public class Player {
     private int money;
     private List<Card> playerCards;
     private boolean isActivePlayer;
+    private boolean isHumanPlayer;
 
     public Player(String name, boolean isActivePlayer) {
         this.name = name;
         this.money = INITIAL_PLAYER_MONEY;
         this.playerCards = getInitialCards();
         this.isActivePlayer = isActivePlayer;
+        this.isHumanPlayer = false;
     }
 
     public List<Card> getInitialCards() {
@@ -31,6 +33,35 @@ public class Player {
         initialCards.add(Card.createCardByName(CardName.BAKERY));
         initialCards.add(Card.createCardByName(CardName.CITY_HALL));
         return initialCards;
+    }
+
+    @Override
+    public String toString() {
+        return name + "  " + money + "€";
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int money) {
+        this.money = money;
+    }
+
+    public List<Card> getPlayerCards() {
+        return playerCards;
+    }
+
+    public void setPlayerCards(List<Card> playerCards) {
+        this.playerCards = playerCards;
+    }
+
+    public boolean isActivePlayer() {
+        return isActivePlayer;
+    }
+
+    public void setActivePlayer(boolean activePlayer) {
+        isActivePlayer = activePlayer;
     }
 
     public void buyCard(Card card) {

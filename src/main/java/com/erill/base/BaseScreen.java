@@ -8,7 +8,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * Created by Roger Erill on 11/4/17.
  */
-public class BaseScreen {
+public class BaseScreen implements BaseView {
 
     private PrintColorWriter colorOut;
 
@@ -20,6 +20,7 @@ public class BaseScreen {
         }
     }
 
+    @Override
     public void print(String message) {
         System.out.println(message);
     }
