@@ -16,7 +16,7 @@ public interface MainView extends BaseView {
 
     void startGame(List<Player> players);
 
-    void endGame();
+    void endGame(Player winner);
 
     void printIncorrectInput(String input);
 

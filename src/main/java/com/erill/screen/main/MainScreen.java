@@ -43,8 +43,8 @@ public class MainScreen extends BaseScreen implements MainView {
     }
 
     @Override
-    public void endGame() {
-
+    public void endGame(Player winner) {
+        printColor(PrintColor.RED, PrintColor.WHITE_BG, "WINNER IS " + winner.printShortDescription());
     }
 
     @Override
@@ -55,8 +55,9 @@ public class MainScreen extends BaseScreen implements MainView {
 
     @Override
     public void printDiceResult(int firstDie, int secondDie) {
-        if (secondDie != 0) print("Dice result is " + firstDie + " and " + secondDie);
-        else print("Dice result is " + firstDie);
+        if (secondDie != 0) printColor(PrintColor.BLACK, PrintColor.WHITE_BG,
+                "Dice result is " + firstDie + " and " + secondDie);
+        else printColor(PrintColor.BLACK, PrintColor.WHITE_BG,"Dice result is " + firstDie);
     }
 
     @Override

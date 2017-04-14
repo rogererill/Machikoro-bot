@@ -1,6 +1,7 @@
 package com.erill;
 
 import com.erill.card.Card;
+import com.erill.card.LandmarkCard;
 
 import java.util.List;
 
@@ -62,6 +63,14 @@ public class PlayerBrain {
 
     //TODO
     public Card calculateWantedCard() {
+        Player player = playerList.get(indexCurrentPlayer);
+        List<LandmarkCard> unpurchasedLandmarks = player.getUnpurchasedLandmarks();
+        for (LandmarkCard unpurchasedLandmark : unpurchasedLandmarks) {
+            if (player.getMoney() >= unpurchasedLandmark.getCost()) {
+                unpurchasedLandmark.setActivated(true);
+                return unpurchasedLandmark;
+            }
+        }
         return null;
     }
 

@@ -5,11 +5,15 @@ import com.erill.Player;
 import com.erill.PlayerBrain;
 import com.erill.base.BasePresenter;
 import com.erill.card.Card;
+import com.erill.card.CardClass;
 import com.erill.card.CardType;
+import com.erill.card.LandmarkCard;
 import com.erill.printer.PrintColor;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.erill.printer.PrintColorWriter.ENDLINE;
 
 /**
  * Created by Roger Erill on 11/4/17.
@@ -47,6 +51,8 @@ public class MainPresenter extends BasePresenter<MainView> {
                 return PrintColor.RED_BG;
             case MAJOR_ESTABLISHMENT:
                 return PrintColor.PURPLE_BG;
+            case LANDMARK:
+                return PrintColor.YELLOW_BG;
             default:
                 return PrintColor.BLACK_BG;
         }
@@ -68,9 +74,10 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     public void readInput(String input) {
+        Player currentPlayer = players.get(playerBrain.getIndexCurrentPlayer());
         switch (input) {
             case "q":
-                getView().endGame();
+                getView().endGame(currentPlayer);
                 break;
             case "":
                 updatePlayerBrainInfo();
@@ -83,11 +90,26 @@ public class MainPresenter extends BasePresenter<MainView> {
 
                 updatePlayerBrainInfo();
                 Card wantedCard = playerBrain.calculateWantedCard();
-                resolveCardPurchase(wantedCard);
+                boolean gameFinished = false;
+                if (wantedCard != null) {
+                    getView().print(ENDLINE);
+                    getView().print(currentPlayer.printShortDescription() + " bought");
+                    getView().printCard(wantedCard, getPrintColor(wantedCard));
+                    getView().print(ENDLINE);
+                    gameFinished = resolveCardPurchase(currentPlayer, wantedCard);
+                }
 
-                playerBrain.passTurn();
+                getView().print("Status post dice and card purchasing");
+                getView().printPlayers(players, playerBrain.getIndexCurrentPlayer());
 
-                getView().endTurn();
+
+                if (gameFinished) {
+                    getView().endGame(currentPlayer);
+                } else {
+                    checkCityHallCoin(currentPlayer, wantedCard);
+                    playerBrain.passTurn();
+                    getView().endTurn();
+                }
 
                 break;
             default:
@@ -96,9 +118,25 @@ public class MainPresenter extends BasePresenter<MainView> {
         }
     }
 
-    //TODO
-    private void resolveCardPurchase(Card wantedCard) {
+    private void checkCityHallCoin(Player currentPlayer, Card wantedCard) {
+        if (wantedCard == null && currentPlayer.getMoney() == 0) {
+            getView().print("We give " + currentPlayer.printShortDescription()
+                    + " 1 coin because of City's hall");
+            currentPlayer.setMoney(1);
+        }
+    }
 
+    //TODO
+    private boolean resolveCardPurchase(Player currentPlayer, Card wantedCard) {
+        if (wantedCard instanceof LandmarkCard) {
+            currentPlayer.activateLandmarkCard((LandmarkCard) wantedCard);
+            currentPlayer.setMoney(currentPlayer.getMoney() - wantedCard.getCost());
+            List<LandmarkCard> unpurchasedLandmarks = currentPlayer.getUnpurchasedLandmarks();
+            return unpurchasedLandmarks.isEmpty();
+        } else {
+            currentPlayer.buyCard(wantedCard);
+            return false;
+        }
     }
 
     //TODO
@@ -117,9 +155,13 @@ public class MainPresenter extends BasePresenter<MainView> {
         for (Card playerCard : playerCards) {
             List<Integer> activations = playerCard.getActivations();
             if (activations.contains(totalValue) && playerCard.getType().equals(CardType.SECONDARY_INDUSTRY)) {
+                int reward = playerCard.getReward();
+                if (playerCard.getCardClass().equals(CardClass.STORE) && currentPlayer.hasShoppingMall()) {
+                    reward += 1;
+                }
                 getView().print(playerCard.getName() + " activated. " + currentPlayer.printShortDescription() +
-                        " receives " + playerCard.getReward() + " coins");
-                currentPlayer.giveMoney(playerCard.getReward());
+                        " receives " + reward + " coins");
+                currentPlayer.giveMoney(reward);
             }
         }
     }
@@ -133,7 +175,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                 List<Integer> activations = playerCard.getActivations();
                 if (activations.contains(totalValue) && playerCard.getType().equals(CardType.PRIMARY_INDUSTRY)) {
                     getView().print(playerCard.getName() + " activated. " + analysedPlayer.printShortDescription() +
-                                " receives " + playerCard.getReward() + " coins");
+                            " receives " + playerCard.getReward() + " coins");
                     analysedPlayer.giveMoney(playerCard.getReward());
                 }
             }
@@ -150,6 +192,9 @@ public class MainPresenter extends BasePresenter<MainView> {
                 List<Integer> activations = playerCard.getActivations();
                 if (activations.contains(totalValue) && playerCard.getType().equals(CardType.RESTAURANT)) {
                     int amountToPay = Math.min(currentPlayer.getMoney(), playerCard.getReward());
+                    if (analysedPlayer.hasShoppingMall()) {
+                        amountToPay += 1;
+                    }
                     getView().print(playerCard.getName() + " activated. " + currentPlayer.printShortDescription() +
                             " pays " + amountToPay + " to " + analysedPlayer.printShortDescription());
                     currentPlayer.takeMoney(amountToPay);

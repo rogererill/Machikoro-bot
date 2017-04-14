@@ -70,16 +70,7 @@ public class Board {
             result.add(poppedCard);
             differentCards = (int) result.stream().distinct().count();
         }
-        result.sort((card1, card2) -> {
-            List<Integer> activations = card1.getActivations();
-            if (activations.isEmpty()) return -1;
-            List<Integer> activations2 = card2.getActivations();
-            if (activations2.isEmpty()) return 1;
-
-            int compare = activations.get(0).compareTo(activations2.get(0));
-            if (compare != 0) return compare;
-            return card1.toString().compareTo(card2.toString());
-        });
+        result.sort(new CardComparator());
         return result;
     }
 

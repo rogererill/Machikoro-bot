@@ -121,6 +121,10 @@ public class Card {
         return name.getName();
     }
 
+    public CardName getCardName() {
+        return name;
+    }
+
     public List<Integer> getActivations() {
         return activations;
     }
@@ -137,6 +141,10 @@ public class Card {
         return reward;
     }
 
+    public CardClass getCardClass() {
+        return cardClass;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -144,6 +152,13 @@ public class Card {
         printCardName(sb);
         sb.append(PrintColorWriter.LONG_SPACE);
         sb.append("[").append(id).append("]");
+        return sb.toString();
+    }
+
+    public String getShortDescription() {
+        StringBuilder sb = new StringBuilder();
+        printActivations(sb);
+        sb.append(name.getName());
         return sb.toString();
     }
 
@@ -157,7 +172,6 @@ public class Card {
     }
 
     private void printCardName(StringBuilder sb) {
-        sb.append(PrintColorWriter.LONG_SPACE);
         sb.append(name.getName());
         sb.append(PrintColorWriter.LONG_SPACE);
     }
@@ -193,9 +207,12 @@ public class Card {
     }
 
     private void printActivations(StringBuilder sb) {
-        sb.append(activations.get(0));
-        for (int i = 1; i < activations.size(); i++) {
-            sb.append("-").append(activations.get(i));
+        if (activations.size() > 0) {
+            sb.append(activations.get(0));
+            for (int i = 1; i < activations.size(); i++) {
+                sb.append("-").append(activations.get(i));
+            }
+            sb.append(PrintColorWriter.LONG_SPACE);
         }
     }
 
