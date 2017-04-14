@@ -5,7 +5,6 @@ import com.erill.Player;
 import com.erill.base.BaseScreen;
 import com.erill.card.Card;
 import com.erill.printer.PrintColor;
-import javafx.util.Pair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,7 +37,7 @@ public class MainScreen extends BaseScreen implements MainView {
 
     @Override
     public void startGame(List<Player> players) {
-        printPlayers(players);
+        printPlayers(players, 0);
         printColor(PrintColor.YELLOW, PrintColor.BLACK_BG, "Welcome to this new game. Press enter to start action. Press q to quit");
         readInput();
     }
@@ -55,15 +54,22 @@ public class MainScreen extends BaseScreen implements MainView {
     }
 
     @Override
-    public void printDiceResult(Pair<Integer, Integer> diceTurn) {
-        print("Dice result is " + diceTurn.getKey() + " and " + diceTurn.getValue());
+    public void printDiceResult(int firstDie, int secondDie) {
+        if (secondDie != 0) print("Dice result is " + firstDie + " and " + secondDie);
+        else print("Dice result is " + firstDie);
     }
 
     @Override
-    public void printPlayers(List<Player> players) {
+    public void printPlayers(List<Player> players, int indexCurrentPlayer) {
         print(ENDLINE);
-        for (Player player : players) {
-            print(player.toString());
+        for (int i = 0; i < players.size(); i++) {
+            if (indexCurrentPlayer == i) {
+                System.out.print("--> ");
+            }
+            else {
+                System.out.print("    ");
+            }
+            print(players.get(i).toString());
         }
         print(ENDLINE);
     }

@@ -117,6 +117,10 @@ public class Card {
         this.id = id;
     }
 
+    public String getName() {
+        return name.getName();
+    }
+
     public List<Integer> getActivations() {
         return activations;
     }
@@ -127,6 +131,10 @@ public class Card {
 
     public CardType getType() {
         return type;
+    }
+
+    public int getReward() {
+        return reward;
     }
 
     @Override

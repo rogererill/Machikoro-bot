@@ -7,7 +7,6 @@ import com.erill.base.BasePresenter;
 import com.erill.card.Card;
 import com.erill.card.CardType;
 import com.erill.printer.PrintColor;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +20,7 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private Board board;
     private List<Player> players;
+    private int numPlayers;
     private PlayerBrain playerBrain;
 
     MainPresenter(Board board) {
@@ -53,6 +53,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     public void createGame(int numPlayers) {
+        this.numPlayers = numPlayers;
         createPlayers(numPlayers);
         playerBrain.setIndexCurrentPlayer(0);
         getView().startGame(players);
@@ -73,20 +74,20 @@ public class MainPresenter extends BasePresenter<MainView> {
                 break;
             case "":
                 updatePlayerBrainInfo();
+                printBoard();
+                getView().printPlayers(players, playerBrain.getIndexCurrentPlayer());
 
-                Pair<Integer, Integer> diceTurn = playerBrain.throwDice();
-                getView().printDiceResult(diceTurn);
-                resolveDiceValue(diceTurn);
+                playerBrain.throwDice();
+                getView().printDiceResult(playerBrain.getFirstDie(), playerBrain.getSecondDie());
+                resolveDiceValue(playerBrain.getFirstDie(), playerBrain.getSecondDie());
 
                 updatePlayerBrainInfo();
                 Card wantedCard = playerBrain.calculateWantedCard();
                 resolveCardPurchase(wantedCard);
 
-                printBoard();
-                getView().printPlayers(players);
-                getView().endTurn();
-
                 playerBrain.passTurn();
+
+                getView().endTurn();
 
                 break;
             default:
@@ -101,8 +102,62 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     //TODO
-    private void resolveDiceValue(Pair<Integer, Integer> diceTurn) {
+    private void resolveDiceValue(int firstDie, int secondDie) {
+        int totalValue = firstDie + secondDie;
+        int currentPlayerIndex = playerBrain.getIndexCurrentPlayer();
+        Player currentPlayer = players.get(currentPlayerIndex);
+        resolveRedCards(totalValue, currentPlayerIndex, currentPlayer);
+        resolveBlueCards(totalValue, currentPlayerIndex);
+        resolveGreenCards(totalValue, currentPlayer);
 
+    }
+
+    private void resolveGreenCards(int totalValue, Player currentPlayer) {
+        List<Card> playerCards = currentPlayer.getPlayerCards();
+        for (Card playerCard : playerCards) {
+            List<Integer> activations = playerCard.getActivations();
+            if (activations.contains(totalValue) && playerCard.getType().equals(CardType.SECONDARY_INDUSTRY)) {
+                getView().print(playerCard.getName() + " activated. " + currentPlayer.printShortDescription() +
+                        " receives " + playerCard.getReward() + " coins");
+                currentPlayer.giveMoney(playerCard.getReward());
+            }
+        }
+    }
+
+    private void resolveBlueCards(int totalValue, int currentPlayerIndex) {
+        int iteratorIndex = currentPlayerIndex;
+        do {
+            Player analysedPlayer = players.get(iteratorIndex);
+            List<Card> playerCards = analysedPlayer.getPlayerCards();
+            for (Card playerCard : playerCards) {
+                List<Integer> activations = playerCard.getActivations();
+                if (activations.contains(totalValue) && playerCard.getType().equals(CardType.PRIMARY_INDUSTRY)) {
+                    getView().print(playerCard.getName() + " activated. " + analysedPlayer.printShortDescription() +
+                                " receives " + playerCard.getReward() + " coins");
+                    analysedPlayer.giveMoney(playerCard.getReward());
+                }
+            }
+            iteratorIndex = (iteratorIndex + 1) % numPlayers;
+        } while (iteratorIndex != currentPlayerIndex);
+    }
+
+    private void resolveRedCards(int totalValue, int currentPlayerIndex, Player currentPlayer) {
+        int iteratorIndex = ((currentPlayerIndex + numPlayers - 1) % numPlayers);
+        while (iteratorIndex != currentPlayerIndex) {
+            Player analysedPlayer = players.get(iteratorIndex);
+            List<Card> playerCards = analysedPlayer.getPlayerCards();
+            for (Card playerCard : playerCards) {
+                List<Integer> activations = playerCard.getActivations();
+                if (activations.contains(totalValue) && playerCard.getType().equals(CardType.RESTAURANT)) {
+                    int amountToPay = Math.min(currentPlayer.getMoney(), playerCard.getReward());
+                    getView().print(playerCard.getName() + " activated. " + currentPlayer.printShortDescription() +
+                            " pays " + amountToPay + " to " + analysedPlayer.printShortDescription());
+                    currentPlayer.takeMoney(amountToPay);
+                    analysedPlayer.giveMoney(amountToPay);
+                }
+            }
+            iteratorIndex = ((iteratorIndex + numPlayers - 1) % numPlayers);
+        }
     }
 
     private void updatePlayerBrainInfo() {

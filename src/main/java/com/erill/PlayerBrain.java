@@ -1,10 +1,8 @@
 package com.erill;
 
 import com.erill.card.Card;
-import javafx.util.Pair;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by Roger Erill on 12/4/17.
@@ -16,8 +14,11 @@ public class PlayerBrain {
     private int indexCurrentPlayer;
     private List<Player> playerList;
     private Board board;
+    private Dice dice;
 
-    private PlayerBrain() {}
+    private PlayerBrain() {
+        dice = new Dice();
+    }
 
     public static PlayerBrain getInstance() {
         if (playerBrain == null) {
@@ -55,14 +56,24 @@ public class PlayerBrain {
     }
 
     //TODO
-    public Pair<Integer, Integer> throwDice() {
-        int firstDice = new Random(System.currentTimeMillis()).nextInt(6);
-        int secondDice = 0;
-        return new Pair<>(firstDice, secondDice);
+    public void throwDice() {
+        dice.rollOneDie();
     }
 
     //TODO
     public Card calculateWantedCard() {
         return null;
+    }
+
+    public int getFirstDie() {
+        return dice.getFirstDie();
+    }
+
+    public int getSecondDie() {
+        return dice.getSecondDie();
+    }
+
+    public int getTotalDice() {
+        return getFirstDie() + getSecondDie();
     }
 }

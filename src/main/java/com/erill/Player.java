@@ -72,4 +72,16 @@ public class Player {
     public boolean removeCard(Card card) {
         return playerCards.remove(card);
     }
+
+    public void takeMoney(int amountToPay) {
+        this.money -= amountToPay;
+    }
+
+    public void giveMoney(int amountToPay) {
+        this.money += amountToPay;
+    }
+
+    public String printShortDescription() {
+        return this.name + "[" + money + "]";
+    }
 }

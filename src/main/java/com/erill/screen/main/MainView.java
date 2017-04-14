@@ -4,7 +4,6 @@ import com.erill.Player;
 import com.erill.base.BaseView;
 import com.erill.card.Card;
 import com.erill.printer.PrintColor;
-import javafx.util.Pair;
 
 import java.util.List;
 
@@ -21,9 +20,9 @@ public interface MainView extends BaseView {
 
     void printIncorrectInput(String input);
 
-    void printDiceResult(Pair<Integer, Integer> diceTurn);
+    void printDiceResult(int firstDie, int secondDie);
 
-    void printPlayers(List<Player> players);
+    void printPlayers(List<Player> players, int indexCurrentPlayer);
 
     void endTurn();
 }
