@@ -26,7 +26,7 @@ public class Card {
         this.cardClass = cardClass;
         this.cost = cost;
         this.activations = activations;
-        this.reward = -1;
+        this.reward = 0;
     }
 
     public Card(CardName name, CardType type, CardClass cardClass, int cost, List<Integer> activations, int reward) {
@@ -63,7 +63,7 @@ public class Card {
             case CAFE:
                 return new Card(CardName.CAFE, CardType.RESTAURANT, CardClass.RESTAURANT, 2, Arrays.asList(3),1);
             case RESTAURANT:
-                return new Card(CardName.RESTAURANT, CardType.RESTAURANT, CardClass.RESTAURANT, 3, Arrays.asList(9,10),3);
+                return new Card(CardName.RESTAURANT, CardType.RESTAURANT, CardClass.RESTAURANT, 3, Arrays.asList(9,10),2);
             case STADIUM:
                 return new Card(CardName.STADIUM, CardType.MAJOR_ESTABLISHMENT, CardClass.MAJOR_ESTABLISHMENT, 6, Arrays.asList(6));
             case TV_STATION:
@@ -85,7 +85,7 @@ public class Card {
             case TUNA_BOAT:
                 return new Card(CardName.TUNA_BOAT, CardType.PRIMARY_INDUSTRY, CardClass.AQUATIC, 5, Arrays.asList(12,13,14));
             case FLOWER_SHOP:
-                return new Card(CardName.FLOWER_SHOP, CardType.SECONDARY_INDUSTRY, CardClass.STORE, 1, Arrays.asList(6),1);
+                return new Card(CardName.FLOWER_SHOP, CardType.SECONDARY_INDUSTRY, CardClass.STORE, 1, Arrays.asList(6));
             case FOOD_WAREHOUSE:
                 return new Card(CardName.FOOD_WAREHOUSE, CardType.SECONDARY_INDUSTRY, CardClass.INDUSTRY, 2, Arrays.asList(12,13));
             case SUSHI_BAR:
@@ -212,7 +212,7 @@ public class Card {
             for (int i = 1; i < activations.size(); i++) {
                 sb.append("-").append(activations.get(i));
             }
-            sb.append(PrintColorWriter.LONG_SPACE);
+            sb.append(PrintColorWriter.SHORT_SPACE);
         }
     }
 

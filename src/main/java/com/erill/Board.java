@@ -64,14 +64,19 @@ public class Board {
             Card poppedCard = deck.pop();
             result.add(poppedCard);
         }
+        addCardsUntilMaximumAllowed(result);
+        return result;
+    }
+
+    private void addCardsUntilMaximumAllowed(List<Card> result) {
         int differentCards = (int) result.stream().distinct().count();
         while (differentCards < MAX_DIFFERENT_CARDS) {
             Card poppedCard = deck.pop();
             result.add(poppedCard);
+            System.out.println("Added to board card " + poppedCard.getName());
             differentCards = (int) result.stream().distinct().count();
         }
         result.sort(new CardComparator());
-        return result;
     }
 
 
@@ -83,4 +88,10 @@ public class Board {
         return boardCards;
     }
 
+    public void removeBoughtCard(Card card) {
+        boolean cardRemoved = boardCards.remove(card);
+        if (cardRemoved) {
+            addCardsUntilMaximumAllowed(boardCards);
+        }
+    }
 }

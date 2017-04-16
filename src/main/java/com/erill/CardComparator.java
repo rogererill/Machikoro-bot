@@ -9,6 +9,7 @@ import java.util.List;
  * Created by Roger Erill on 15/4/17.
  */
 public class CardComparator implements Comparator<Card> {
+
     @Override
     public int compare(Card card1, Card card2) {
         List<Integer> activations = card1.getActivations();
@@ -18,6 +19,6 @@ public class CardComparator implements Comparator<Card> {
 
         int compare = activations.get(0).compareTo(activations2.get(0));
         if (compare != 0) return compare;
-        return card1.toString().compareTo(card2.toString());
+        return card2.getCost() - card1.getCost();
     }
 }

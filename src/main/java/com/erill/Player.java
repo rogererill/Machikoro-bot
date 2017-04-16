@@ -23,7 +23,8 @@ public class Player {
     private CardComparator cardComparator;
     private boolean isHumanPlayer;
 
-    private boolean hasShoppingMall;
+    private boolean hasShoppingMall = false;
+    private boolean hasTrainStation = false;
 
     public Player(String name, boolean isActivePlayer) {
         this.name = name;
@@ -53,6 +54,8 @@ public class Player {
         StringBuilder sb = new StringBuilder();
         sb.append(name).append(LONG_SPACE).append(money).append("€");
         sb.append(LONG_SPACE);
+        int value = Utils.calculateNetValue(this);
+        sb.append("[").append(value).append("]").append(LONG_SPACE);
         printCards(sb);
         return sb.toString();
     }
@@ -75,7 +78,7 @@ public class Player {
     private void printActivations(StringBuilder sb, int i, Card playerCard) {
         sb.append(playerCard.getShortDescription());
         if (i < playerCards.size()-1) {
-            sb.append(",  ");
+            sb.append(", ");
         }
     }
 
@@ -138,6 +141,7 @@ public class Player {
 
     public void activateLandmarkCard(LandmarkCard landmarkCard) {
         if (landmarkCard.getCardName().equals(CardName.SHOPPING_MALL)) hasShoppingMall = true;
+        if (landmarkCard.getCardName().equals(CardName.TRAIN_STATION)) hasTrainStation = true;
         for (Card card : playerCards) {
             if (card instanceof LandmarkCard) {
                 if (landmarkCard.getName().equals(card.getName())) {
@@ -149,5 +153,9 @@ public class Player {
 
     public boolean hasShoppingMall() {
         return hasShoppingMall;
+    }
+
+    public boolean hasTrainStation() {
+        return hasTrainStation;
     }
 }

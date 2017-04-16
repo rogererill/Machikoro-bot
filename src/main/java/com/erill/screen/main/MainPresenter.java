@@ -3,6 +3,7 @@ package com.erill.screen.main;
 import com.erill.Board;
 import com.erill.Player;
 import com.erill.PlayerBrain;
+import com.erill.Utils;
 import com.erill.base.BasePresenter;
 import com.erill.card.Card;
 import com.erill.card.CardClass;
@@ -79,7 +80,7 @@ public class MainPresenter extends BasePresenter<MainView> {
             case "q":
                 getView().endGame(currentPlayer);
                 break;
-            case "":
+            case "n":
                 updatePlayerBrainInfo();
                 printBoard();
                 getView().printPlayers(players, playerBrain.getIndexCurrentPlayer());
@@ -99,14 +100,12 @@ public class MainPresenter extends BasePresenter<MainView> {
                     gameFinished = resolveCardPurchase(currentPlayer, wantedCard);
                 }
 
-                getView().print("Status post dice and card purchasing");
-                getView().printPlayers(players, playerBrain.getIndexCurrentPlayer());
-
-
                 if (gameFinished) {
                     getView().endGame(currentPlayer);
                 } else {
                     checkCityHallCoin(currentPlayer, wantedCard);
+                    getView().print("Status post dice and card purchasing");
+                    getView().printPlayers(players, playerBrain.getIndexCurrentPlayer());
                     playerBrain.passTurn();
                     getView().endTurn();
                 }
@@ -128,6 +127,7 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     //TODO
     private boolean resolveCardPurchase(Player currentPlayer, Card wantedCard) {
+        board.removeBoughtCard(wantedCard);
         if (wantedCard instanceof LandmarkCard) {
             currentPlayer.activateLandmarkCard((LandmarkCard) wantedCard);
             currentPlayer.setMoney(currentPlayer.getMoney() - wantedCard.getCost());
@@ -156,8 +156,14 @@ public class MainPresenter extends BasePresenter<MainView> {
             List<Integer> activations = playerCard.getActivations();
             if (activations.contains(totalValue) && playerCard.getType().equals(CardType.SECONDARY_INDUSTRY)) {
                 int reward = playerCard.getReward();
-                if (playerCard.getCardClass().equals(CardClass.STORE) && currentPlayer.hasShoppingMall()) {
-                    reward += 1;
+                boolean getsPlusOneBonus = playerCard.getCardClass().equals(CardClass.STORE) && currentPlayer.hasShoppingMall();
+                if (reward == 0) {
+                    reward = Utils.getRewardForCard(playerCard.getCardName(), currentPlayer.getPlayerCards(), getsPlusOneBonus ? 1 : 0);
+                }
+                else {
+                    if (getsPlusOneBonus) {
+                        reward += 1;
+                    }
                 }
                 getView().print(playerCard.getName() + " activated. " + currentPlayer.printShortDescription() +
                         " receives " + reward + " coins");
@@ -191,10 +197,11 @@ public class MainPresenter extends BasePresenter<MainView> {
             for (Card playerCard : playerCards) {
                 List<Integer> activations = playerCard.getActivations();
                 if (activations.contains(totalValue) && playerCard.getType().equals(CardType.RESTAURANT)) {
-                    int amountToPay = Math.min(currentPlayer.getMoney(), playerCard.getReward());
+                    int cardReward = playerCard.getReward();
                     if (analysedPlayer.hasShoppingMall()) {
-                        amountToPay += 1;
+                        cardReward += 1;
                     }
+                    int amountToPay = Math.min(currentPlayer.getMoney(), cardReward);
                     getView().print(playerCard.getName() + " activated. " + currentPlayer.printShortDescription() +
                             " pays " + amountToPay + " to " + analysedPlayer.printShortDescription());
                     currentPlayer.takeMoney(amountToPay);
