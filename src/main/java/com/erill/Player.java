@@ -25,6 +25,7 @@ public class Player {
 
     private boolean hasShoppingMall = false;
     private boolean hasTrainStation = false;
+    private boolean hasHarbor = false;
 
     public Player(String name, boolean isActivePlayer) {
         this.name = name;
@@ -123,6 +124,10 @@ public class Player {
         money -= card.getCost();
     }
 
+    public void addCard(Card card) {
+        playerCards.add(card);
+    }
+
     public boolean removeCard(Card card) {
         return playerCards.remove(card);
     }
@@ -142,6 +147,7 @@ public class Player {
     public void activateLandmarkCard(LandmarkCard landmarkCard) {
         if (landmarkCard.getCardName().equals(CardName.SHOPPING_MALL)) hasShoppingMall = true;
         if (landmarkCard.getCardName().equals(CardName.TRAIN_STATION)) hasTrainStation = true;
+        if (landmarkCard.getCardName().equals(CardName.HARBOR)) hasHarbor = true;
         for (Card card : playerCards) {
             if (card instanceof LandmarkCard) {
                 if (landmarkCard.getName().equals(card.getName())) {
@@ -157,5 +163,9 @@ public class Player {
 
     public boolean hasTrainStation() {
         return hasTrainStation;
+    }
+
+    public boolean hasHarbor() {
+        return hasHarbor;
     }
 }

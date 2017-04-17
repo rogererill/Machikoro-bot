@@ -132,4 +132,8 @@ public class PlayerBrain {
     public int getTotalDice() {
         return getFirstDie() + getSecondDie();
     }
+
+    public void throwTwoDice() {
+        dice.rollTwoDices();
+    }
 }

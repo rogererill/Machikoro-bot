@@ -144,4 +144,14 @@ public class Utils {
         }
         return PlayerValueTypes.ENDGAME_VALUE;
     }
+
+    public static int getNumberRestaurantsAndShops(Player player) {
+        int result = 0;
+        List<Card> playerCards = player.getPlayerCards();
+        for (Card playerCard : playerCards) {
+            CardClass cardClass = playerCard.getCardClass();
+            if (cardClass.equals(CardClass.STORE) || cardClass.equals(CardClass.RESTAURANT)) ++result;
+        }
+        return result;
+    }
 }

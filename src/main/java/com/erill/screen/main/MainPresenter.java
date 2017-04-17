@@ -1,9 +1,6 @@
 package com.erill.screen.main;
 
-import com.erill.Board;
-import com.erill.Player;
-import com.erill.PlayerBrain;
-import com.erill.Utils;
+import com.erill.*;
 import com.erill.base.BasePresenter;
 import com.erill.card.Card;
 import com.erill.card.CardClass;
@@ -14,6 +11,7 @@ import com.erill.printer.PrintColor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.erill.card.CardName.BUSINESS_CENTER;
 import static com.erill.printer.PrintColorWriter.ENDLINE;
 
 /**
@@ -147,7 +145,129 @@ public class MainPresenter extends BasePresenter<MainView> {
         resolveRedCards(totalValue, currentPlayerIndex, currentPlayer);
         resolveBlueCards(totalValue, currentPlayerIndex);
         resolveGreenCards(totalValue, currentPlayer);
+        resolvePurpleCards(totalValue, currentPlayerIndex, currentPlayer);
 
+    }
+
+    private void resolvePurpleCards(int totalValue, int currentPlayerIndex, Player currentPlayer) {
+        List<Card> playerCards = currentPlayer.getPlayerCards();
+        Card cardToLose = null;
+        Card cardToWin = null;
+        Player playerToSteal = null;
+        for (Card playerCard : playerCards) {
+            List<Integer> activations = playerCard.getActivations();
+            if (activations.contains(totalValue) && playerCard.getType().equals(CardType.MAJOR_ESTABLISHMENT)) {
+                switch (playerCard.getCardName()) {
+                    case STADIUM:
+                        resolveStadiumCard(currentPlayerIndex, currentPlayer, playerCard);
+                        break;
+                    case PUBLISHER:
+                        resolvePublisherCard(currentPlayerIndex, currentPlayer, playerCard);
+                        break;
+                    case TV_STATION:
+                        resolveTVStationCard(currentPlayerIndex, currentPlayer, playerCard);
+                        break;
+                    case BUSINESS_CENTER:
+                        playerToSteal = getPlayerToSteal(currentPlayerIndex);
+                        playerCards.sort(new CardComparator());
+                        cardToLose = playerCards.get(playerCards.size() - 1);
+                        List<Card> playerToStealCards = playerToSteal.getPlayerCards();
+                        playerToStealCards.sort(new CardComparator());
+                        for (Card playerToStealCard : playerToStealCards) {
+                            if (!playerToStealCard.getCardClass().equals(CardClass.MAJOR_ESTABLISHMENT)) {
+                                cardToWin = playerToStealCard;
+                                break;
+                            }
+                        }
+                        break;
+                    case TAX_OFFICE:
+                        resolveTaxOfficeCard(currentPlayerIndex, currentPlayer, playerCard);
+                        break;
+                }
+            }
+        }
+        if (playerToSteal != null) {
+            currentPlayer.removeCard(cardToLose);
+            currentPlayer.addCard(cardToWin);
+            playerToSteal.removeCard(cardToWin);
+            playerToSteal.addCard(cardToLose);
+            getView().print(BUSINESS_CENTER.getName() + " activated. " + currentPlayer.printShortDescription() +
+                    " gives " + cardToLose.getName() + " to " + playerToSteal.printShortDescription() +
+                    " in exchange for " + cardToWin.getName());
+        }
+    }
+
+    private Player getPlayerToSteal(int currentPlayerIndex) {
+        Player playerToSteal = null;
+        for (int i = 0; i < players.size(); i++) {
+            if (i != currentPlayerIndex) {
+                Player analysedPlayer = players.get(i);
+                if (playerToSteal == null || Utils.calculateNetValue(analysedPlayer) > Utils.calculateNetValue(playerToSteal)) {
+                    playerToSteal = analysedPlayer;
+                }
+            }
+        }
+        return playerToSteal;
+    }
+
+    private void resolveTaxOfficeCard(int currentPlayerIndex, Player currentPlayer, Card playerCard) {
+        for (int i = 0; i < players.size(); i++) {
+            if (i != currentPlayerIndex) {
+                Player analyzedPlayer = players.get(i);
+                if (analyzedPlayer.getMoney() > 8) {
+                    int amountToPay = analyzedPlayer.getMoney()/2;
+                    getView().print(playerCard.getName() + " activated. " + analyzedPlayer.printShortDescription() +
+                            " pays " + amountToPay + " to " + currentPlayer.printShortDescription());
+                }
+            }
+        }
+    }
+
+    private void resolveTVStationCard(int currentPlayerIndex, Player currentPlayer, Card playerCard) {
+        Player playerToSteal = null;
+        int money = Integer.MIN_VALUE;
+        for (int i = 0; i < players.size(); i++) {
+            if (i != currentPlayerIndex) {
+                Player analysedPlayer = players.get(i);
+                if (playerToSteal == null || analysedPlayer.getMoney() > money ||
+                    (analysedPlayer.getMoney() == playerToSteal.getMoney())
+                        && Utils.calculateNetValue(analysedPlayer) > Utils.calculateNetValue(playerToSteal)) {
+                    playerToSteal = analysedPlayer;
+                    money = analysedPlayer.getMoney();
+                }
+            }
+        }
+        int amountToPay = Math.min(5, playerToSteal.getMoney());
+        getView().print(playerCard.getName() + " activated. " + playerToSteal.printShortDescription() +
+                " pays " + amountToPay + " to " + currentPlayer.printShortDescription());
+        currentPlayer.giveMoney(amountToPay);
+        playerToSteal.takeMoney(amountToPay);
+    }
+
+    private void resolvePublisherCard(int currentPlayerIndex, Player currentPlayer, Card playerCard) {
+        for (int i = 0; i < players.size(); i++) {
+            if (i != currentPlayerIndex) {
+                Player analysedPlayer = players.get(i);
+                int amountToPay = Math.min(Utils.getNumberRestaurantsAndShops(analysedPlayer), analysedPlayer.getMoney());
+                getView().print(playerCard.getName() + " activated. " + analysedPlayer.printShortDescription() +
+                        " pays " + amountToPay + " to " + currentPlayer.printShortDescription());
+                currentPlayer.giveMoney(amountToPay);
+                analysedPlayer.takeMoney(amountToPay);
+            }
+        }
+    }
+
+    private void resolveStadiumCard(int currentPlayerIndex, Player currentPlayer, Card playerCard) {
+        for (int i = 0; i < players.size(); i++) {
+            if (i != currentPlayerIndex) {
+                Player analysedPlayer = players.get(i);
+                int amountToPay = Math.min(2, analysedPlayer.getMoney());
+                getView().print(playerCard.getName() + " activated. " + analysedPlayer.printShortDescription() +
+                        " pays " + amountToPay + " to " + currentPlayer.printShortDescription());
+                currentPlayer.giveMoney(amountToPay);
+                analysedPlayer.takeMoney(amountToPay);
+            }
+        }
     }
 
     private void resolveGreenCards(int totalValue, Player currentPlayer) {
@@ -180,9 +300,20 @@ public class MainPresenter extends BasePresenter<MainView> {
             for (Card playerCard : playerCards) {
                 List<Integer> activations = playerCard.getActivations();
                 if (activations.contains(totalValue) && playerCard.getType().equals(CardType.PRIMARY_INDUSTRY)) {
+                    int reward = playerCard.getReward();
+                    switch (playerCard.getCardName()) {
+                        case MACKEREL_BOAT:
+                            if (!analysedPlayer.hasHarbor()) reward = 0;
+                            break;
+                        case TUNA_BOAT:
+                            playerBrain.throwTwoDice();
+                            getView().printDiceResult(playerBrain.getFirstDie(), playerBrain.getSecondDie());
+                            reward = playerBrain.getTotalDice();
+                            break;
+                    }
                     getView().print(playerCard.getName() + " activated. " + analysedPlayer.printShortDescription() +
-                            " receives " + playerCard.getReward() + " coins");
-                    analysedPlayer.giveMoney(playerCard.getReward());
+                            " receives " + reward + " coins");
+                    analysedPlayer.giveMoney(reward);
                 }
             }
             iteratorIndex = (iteratorIndex + 1) % numPlayers;

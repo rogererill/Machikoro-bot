@@ -5,12 +5,12 @@ package com.erill;
  */
 public enum PlayerValueTypes {
 
-    VERY_LOW_VALUE(6),
-    LOW_VALUE(12),
-    MID_VALUE(18),
-    HIGH_VALUE(24),
-    VERY_HIGH_VALUE(30),
-    ENDGAME_VALUE(36);
+    VERY_LOW_VALUE(10),
+    LOW_VALUE(20),
+    MID_VALUE(30),
+    HIGH_VALUE(40),
+    VERY_HIGH_VALUE(50),
+    ENDGAME_VALUE(60);
 
     int value;
 
