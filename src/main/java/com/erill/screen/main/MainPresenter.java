@@ -167,8 +167,8 @@ public class MainPresenter extends BasePresenter<MainView> {
                     case TV_STATION:
                         resolveTVStationCard(currentPlayerIndex, currentPlayer, playerCard);
                         break;
-                    case BUSINESS_CENTER:
-                        playerToSteal = getPlayerToSteal(currentPlayerIndex);
+                    case BUSINESS_CENTER: //TODO:
+                        /*playerToSteal = getPlayerToSteal(currentPlayerIndex);
                         playerCards.sort(new CardComparator());
                         cardToLose = playerCards.get(playerCards.size() - 1);
                         List<Card> playerToStealCards = playerToSteal.getPlayerCards();
@@ -178,7 +178,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                                 cardToWin = playerToStealCard;
                                 break;
                             }
-                        }
+                        }*/
                         break;
                     case TAX_OFFICE:
                         resolveTaxOfficeCard(currentPlayerIndex, currentPlayer, playerCard);
@@ -218,6 +218,8 @@ public class MainPresenter extends BasePresenter<MainView> {
                     int amountToPay = analyzedPlayer.getMoney()/2;
                     getView().print(playerCard.getName() + " activated. " + analyzedPlayer.printShortDescription() +
                             " pays " + amountToPay + " to " + currentPlayer.printShortDescription());
+                    analyzedPlayer.takeMoney(amountToPay);
+                    currentPlayer.giveMoney(amountToPay);
                 }
             }
         }

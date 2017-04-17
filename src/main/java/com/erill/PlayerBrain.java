@@ -76,16 +76,16 @@ public class PlayerBrain {
                     percentageTwoDices = 25;
                     break;
                 case MID_VALUE:
-                    percentageTwoDices = 50;
+                    percentageTwoDices = 40;
                     break;
                 case HIGH_VALUE:
-                    percentageTwoDices = 80;
+                    percentageTwoDices = 60;
                     break;
                 case VERY_HIGH_VALUE:
-                    percentageTwoDices = 90;
+                    percentageTwoDices = 95;
                     break;
                 case ENDGAME_VALUE:
-                    percentageTwoDices = 95;
+                    percentageTwoDices = 99;
                     break;
             }
             int randomChoice = (int) (Math.random() * 100) + 1;
@@ -106,7 +106,7 @@ public class PlayerBrain {
         if (landmarkCard != null) return landmarkCard;
         HashMap<Card, Integer> perceivedCardValues = Utils.fillCardValues(player, board.getBoardCards());
         int randomChoice = (int) (Math.random() * 100) + 1;
-        Card selectedCard = Utils.getSelectedCard(player.getMoney(), perceivedCardValues, randomChoice);
+        Card selectedCard = Utils.getSelectedCard(player.getPlayerCards(), player.getMoney(), perceivedCardValues, randomChoice);
         return selectedCard;
     }
 

@@ -9,8 +9,8 @@ import java.util.*;
  */
 public class Utils {
 
-    static Card getSelectedCard(int money, HashMap<Card, Integer> perceivedCardValues, double randomChoice) {
-        Map<Card, Double> normalisedValueCards = normaliseValues(getSortedCards(money, perceivedCardValues));
+    static Card getSelectedCard(List<Card> playerCards, int money, HashMap<Card, Integer> perceivedCardValues, double randomChoice) {
+        Map<Card, Double> normalisedValueCards = normaliseValues(getSortedCards(playerCards, money, perceivedCardValues));
         double accumulated = 0;
         System.out.println("Random number: " + randomChoice);
         for (Map.Entry<Card, Double> entry : normalisedValueCards.entrySet()) {
@@ -23,16 +23,29 @@ public class Utils {
         return null;
     }
 
-    private static Map<Card, Integer> getSortedCards(int money, HashMap<Card, Integer> perceivedCardValues) {
+    private static Map<Card, Integer> getSortedCards(List<Card> playerCards, int money, HashMap<Card, Integer> perceivedCardValues) {
         List<Map.Entry<Card, Integer>> list = new LinkedList<>(perceivedCardValues.entrySet());
         list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
         Map<Card, Integer> result = new LinkedHashMap<>();
         for (Map.Entry<Card, Integer> entry : list) {
-            if (money >= entry.getKey().getCost()) {
-                result.put(entry.getKey(), entry.getValue());
+            Card card = entry.getKey();
+            if (money >= card.getCost()) {
+                if (card.getCardClass().equals(CardClass.MAJOR_ESTABLISHMENT)) {
+                     if (!alreadyBoughtCard(card, playerCards)) result.put(card, entry.getValue());
+                }
+                else {
+                    result.put(card, entry.getValue());
+                }
             }
         }
         return result;
+    }
+
+    private static boolean alreadyBoughtCard(Card card, List<Card> playerCards) {
+        for (Card playerCard : playerCards) {
+            if (playerCard.getCardName().equals(card.getCardName())) return true;
+        }
+        return false;
     }
 
     private static Map<Card, Double> normaliseValues(Map<Card, Integer> sortedCards) {
